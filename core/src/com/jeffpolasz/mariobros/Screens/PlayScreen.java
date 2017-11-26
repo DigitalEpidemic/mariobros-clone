@@ -30,15 +30,18 @@ import com.jeffpolasz.mariobros.Scenes.Hud;
  */
 
 public class PlayScreen implements Screen {
+    // Basic PlayScreen variables
     private MarioBros game;
     private OrthographicCamera gamecam;
     private Viewport gamePort;
     private Hud hud;
 
+    // Tiled map variables
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
 
+    // Box2D variables
     private World world;
     private Box2DDebugRenderer b2dr;
 
@@ -48,12 +51,17 @@ public class PlayScreen implements Screen {
         gamePort = new FitViewport(MarioBros.V_WIDTH, MarioBros.V_HEIGHT, gamecam);
         hud = new Hud(game.batch);
 
+        // Load tilemap and setup map renderer
         mapLoader = new TmxMapLoader();
         map = mapLoader.load("level1.tmx");
         renderer = new OrthogonalTiledMapRenderer(map);
+
+        // Initially setup gamecam to be centered at the start of the map
         gamecam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
 
+        // Create Box2D world
         world = new World(new Vector2(0, 0), true);
+        // Allows debug lines of the Box2D world
         b2dr = new Box2DDebugRenderer();
 
         // Temporary
@@ -154,6 +162,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        // Updates the game viewport
         gamePort.update(width, height);
     }
 
