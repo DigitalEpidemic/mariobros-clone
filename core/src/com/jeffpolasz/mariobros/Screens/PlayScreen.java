@@ -28,6 +28,7 @@ import com.jeffpolasz.mariobros.MarioBros;
 import com.jeffpolasz.mariobros.Scenes.Hud;
 import com.jeffpolasz.mariobros.Sprites.Mario;
 import com.jeffpolasz.mariobros.Tools.B2WorldCreator;
+import com.jeffpolasz.mariobros.Tools.WorldContactListener;
 
 /**
  * Created by Jeff on 2017-11-25.
@@ -79,6 +80,8 @@ public class PlayScreen implements Screen {
 
         // Create Mario in the game world
         player = new Mario(world, this);
+
+        world.setContactListener(new WorldContactListener());
     }
 
     public TextureAtlas getAtlas() {
