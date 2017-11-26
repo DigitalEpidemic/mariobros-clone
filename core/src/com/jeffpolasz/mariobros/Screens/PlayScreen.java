@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jeffpolasz.mariobros.MarioBros;
 import com.jeffpolasz.mariobros.Scenes.Hud;
+import com.jeffpolasz.mariobros.Sprites.Enemy;
 import com.jeffpolasz.mariobros.Sprites.Goomba;
 import com.jeffpolasz.mariobros.Sprites.Mario;
 import com.jeffpolasz.mariobros.Tools.B2WorldCreator;
@@ -53,10 +54,10 @@ public class PlayScreen implements Screen {
     // Box2D variables
     private World world;
     private Box2DDebugRenderer b2dr;
+    private B2WorldCreator creator;
 
     // Mario sprite
     private Mario player;
-    private Goomba goomba; // Temporary
 
     private Music music;
 
@@ -81,7 +82,7 @@ public class PlayScreen implements Screen {
         // Allows debug lines of the Box2D world
         b2dr = new Box2DDebugRenderer();
 
-        new B2WorldCreator(this);
+        creator = new B2WorldCreator(this);
 
         // Create Mario in the game world
         player = new Mario(this);
@@ -91,8 +92,6 @@ public class PlayScreen implements Screen {
         music = MarioBros.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
         music.play();
-
-        goomba = new Goomba(this, 5.64f, .16f);
     }
 
     public TextureAtlas getAtlas() {
@@ -122,7 +121,9 @@ public class PlayScreen implements Screen {
         world.step(1/60f, 6, 2);
 
         player.update(dt);
-        goomba.update(dt);
+        for (Enemy enemy : creator.getGoombas()) {
+            enemy.update(dt);
+        }
         hud.update(dt);
 
         gamecam.position.x = player.b2body.getPosition().x;
@@ -145,7 +146,9 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
         player.draw(game.batch);
-        goomba.draw(game.batch);
+        for (Enemy enemy : creator.getGoombas()) {
+            enemy.draw(game.batch);
+        }
         game.batch.end();
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
