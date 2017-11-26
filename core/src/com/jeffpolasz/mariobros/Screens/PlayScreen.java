@@ -79,10 +79,10 @@ public class PlayScreen implements Screen {
         // Allows debug lines of the Box2D world
         b2dr = new Box2DDebugRenderer();
 
-        new B2WorldCreator(world, map);
+        new B2WorldCreator(this);
 
         // Create Mario in the game world
-        player = new Mario(world, this);
+        player = new Mario(this);
 
         world.setContactListener(new WorldContactListener());
 
@@ -150,6 +150,14 @@ public class PlayScreen implements Screen {
     public void resize(int width, int height) {
         // Updates the game viewport
         gamePort.update(width, height);
+    }
+
+    public TiledMap getMap() {
+        return map;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     @Override
