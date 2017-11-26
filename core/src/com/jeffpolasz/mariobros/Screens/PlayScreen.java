@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jeffpolasz.mariobros.MarioBros;
 import com.jeffpolasz.mariobros.Scenes.Hud;
+import com.jeffpolasz.mariobros.Sprites.Goomba;
 import com.jeffpolasz.mariobros.Sprites.Mario;
 import com.jeffpolasz.mariobros.Tools.B2WorldCreator;
 import com.jeffpolasz.mariobros.Tools.WorldContactListener;
@@ -55,6 +56,7 @@ public class PlayScreen implements Screen {
 
     // Mario sprite
     private Mario player;
+    private Goomba goomba; // Temporary
 
     private Music music;
 
@@ -89,6 +91,8 @@ public class PlayScreen implements Screen {
         music = MarioBros.manager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
         music.play();
+
+        goomba = new Goomba(this, .32f, .32f);
     }
 
     public TextureAtlas getAtlas() {
@@ -118,6 +122,7 @@ public class PlayScreen implements Screen {
         world.step(1/60f, 6, 2);
 
         player.update(dt);
+        goomba.update(dt);
         hud.update(dt);
 
         gamecam.position.x = player.b2body.getPosition().x;
@@ -140,6 +145,7 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(gamecam.combined);
         game.batch.begin();
         player.draw(game.batch);
+        goomba.draw(game.batch);
         game.batch.end();
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
