@@ -1,4 +1,4 @@
-package com.jeffpolasz.mariobros.Sprites;
+package com.jeffpolasz.mariobros.Sprites.Enemies;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;

@@ -6,29 +6,18 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jeffpolasz.mariobros.MarioBros;
 import com.jeffpolasz.mariobros.Scenes.Hud;
-import com.jeffpolasz.mariobros.Sprites.Enemy;
-import com.jeffpolasz.mariobros.Sprites.Goomba;
+import com.jeffpolasz.mariobros.Sprites.Enemies.Enemy;
 import com.jeffpolasz.mariobros.Sprites.Mario;
 import com.jeffpolasz.mariobros.Tools.B2WorldCreator;
 import com.jeffpolasz.mariobros.Tools.WorldContactListener;
@@ -123,6 +112,9 @@ public class PlayScreen implements Screen {
         player.update(dt);
         for (Enemy enemy : creator.getGoombas()) {
             enemy.update(dt);
+            if (enemy.getX() <player.getX() + 224 / MarioBros.PPM) {
+                enemy.b2body.setActive(true);
+            }
         }
         hud.update(dt);
 

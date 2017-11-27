@@ -1,14 +1,9 @@
-package com.jeffpolasz.mariobros.Sprites;
+package com.jeffpolasz.mariobros.Sprites.TileObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import com.jeffpolasz.mariobros.MarioBros;
 import com.jeffpolasz.mariobros.Scenes.Hud;
 import com.jeffpolasz.mariobros.Screens.PlayScreen;
