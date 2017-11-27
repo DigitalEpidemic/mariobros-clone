@@ -11,6 +11,7 @@ import com.jeffpolasz.mariobros.Scenes.Hud;
 import com.jeffpolasz.mariobros.Screens.PlayScreen;
 import com.jeffpolasz.mariobros.Sprites.Items.ItemDef;
 import com.jeffpolasz.mariobros.Sprites.Items.Mushroom;
+import com.jeffpolasz.mariobros.Sprites.Mario;
 
 /**
  * Created by Jeff on 2017-11-25.
@@ -27,7 +28,7 @@ public class Coin extends InteractiveTileObject {
     }
 
     @Override
-    public void onHeadHit() {
+    public void onHeadHit(Mario mario) {
         Gdx.app.log("Coin", "Collision");
         if (getCell().getTile().getId() == BLANK_COIN) {
             MarioBros.manager.get("audio/sounds/bump.wav", Sound.class).play();
