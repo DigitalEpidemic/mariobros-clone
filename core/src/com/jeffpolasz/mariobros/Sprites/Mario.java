@@ -3,6 +3,7 @@ package com.jeffpolasz.mariobros.Sprites;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -19,6 +20,7 @@ import com.jeffpolasz.mariobros.MarioBros;
 import com.jeffpolasz.mariobros.Screens.PlayScreen;
 import com.jeffpolasz.mariobros.Sprites.Enemies.Enemy;
 import com.jeffpolasz.mariobros.Sprites.Enemies.Turtle;
+import com.jeffpolasz.mariobros.Sprites.Other.FireBall;
 
 /**
  * Created by Jeff on 2017-11-25.
@@ -28,6 +30,7 @@ public class Mario extends Sprite {
     public enum State { FALLING, JUMPING, STANDING, RUNNING, GROWING, DEAD };
     public State currentState;
     public State previousState;
+
     public World world;
     public Body b2body;
 
@@ -47,8 +50,12 @@ public class Mario extends Sprite {
     private boolean timeToDefineBigMario;
     private boolean timeToRedefineMario;
     private boolean marioIsDead;
+    private PlayScreen screen;
+
+    private Array<FireBall> fireballs;
 
     public Mario(PlayScreen screen) {
+        this.screen = screen;
         this.world = screen.getWorld();
         currentState = State.STANDING;
         previousState = State.STANDING;
@@ -83,8 +90,11 @@ public class Mario extends Sprite {
         marioDead = new TextureRegion(screen.getAtlas().findRegion("little_mario"),96,0,16,16);
 
         defineMario();
+
         setBounds(0,0,16/MarioBros.PPM,16/MarioBros.PPM);
         setRegion(marioStand);
+
+        fireballs = new Array<FireBall>();
     }
 
     public void update(float dt) {
@@ -99,6 +109,13 @@ public class Mario extends Sprite {
         }
         if (timeToRedefineMario) {
             redefineMario();
+        }
+
+        for (FireBall ball : fireballs) {
+            ball.update(dt);
+            if (ball.isDestroyed()) {
+                fireballs.removeValue(ball, true);
+            }
         }
     }
 
@@ -168,6 +185,22 @@ public class Mario extends Sprite {
         MarioBros.manager.get("audio/sounds/powerup.wav", Sound.class).play();
     }
 
+    public void die() {
+        if (!isDead()) {
+            MarioBros.manager.get("audio/music/mario_music.ogg", Music.class).stop();
+            MarioBros.manager.get("audio/sounds/mariodie.wav", Sound.class).play();
+            marioIsDead = true;
+            Filter filter = new Filter();
+            filter.maskBits = MarioBros.NOTHING_BIT;
+
+            for (Fixture fixture : b2body.getFixtureList()) {
+                fixture.setFilterData(filter);
+            }
+
+            b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+        }
+    }
+
     public boolean isDead() {
         return marioIsDead;
     }
@@ -180,9 +213,16 @@ public class Mario extends Sprite {
         return marioIsBig;
     }
 
+    public void jump(){
+        if ( currentState != State.JUMPING ) {
+            b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+            currentState = State.JUMPING;
+        }
+    }
+
     public void hit(Enemy enemy) {
-        if (enemy instanceof Turtle && ((Turtle)enemy).getCurrentState() == Turtle.State.STANDING_SHELL) {
-            ((Turtle)enemy).kick(this.getX() <= enemy.getX() ? Turtle.KICK_RIGHT_SPEED : Turtle.KICK_LEFT_SPEED);
+        if(enemy instanceof Turtle && ((Turtle) enemy).currentState == Turtle.State.STANDING_SHELL) {
+            ((Turtle) enemy).kick(enemy.b2body.getPosition().x > b2body.getPosition().x ? Turtle.KICK_RIGHT : Turtle.KICK_LEFT);
         } else {
             if (marioIsBig) {
                 marioIsBig = false;
@@ -190,15 +230,7 @@ public class Mario extends Sprite {
                 setBounds(getX(), getY(), getWidth(), getHeight() / 2);
                 MarioBros.manager.get("audio/sounds/powerdown.wav", Sound.class).play();
             } else {
-                MarioBros.manager.get("audio/music/mario_music.ogg", Music.class).stop();
-                MarioBros.manager.get("audio/sounds/mariodie.wav", Sound.class).play();
-                marioIsDead = true;
-                Filter filter = new Filter();
-                filter.maskBits = MarioBros.NOTHING_BIT;
-                for (Fixture fixture : b2body.getFixtureList()) {
-                    fixture.setFilterData(filter);
-                }
-                b2body.applyLinearImpulse(new Vector2(0, 4f), b2body.getWorldCenter(), true);
+                die();
             }
         }
     }
@@ -301,5 +333,15 @@ public class Mario extends Sprite {
         fdef.isSensor = true;
 
         b2body.createFixture(fdef).setUserData(this);
+    }
+
+    public void fire(){
+        fireballs.add(new FireBall(screen, b2body.getPosition().x, b2body.getPosition().y, runningRight ? true : false));
+    }
+
+    public void draw(Batch batch){
+        super.draw(batch);
+        for(FireBall ball : fireballs)
+            ball.draw(batch);
     }
 }

@@ -20,9 +20,9 @@ import com.jeffpolasz.mariobros.Sprites.Mario;
  */
 
 public class Turtle extends Enemy {
-    public static final int KICK_LEFT_SPEED = -2;
-    public static final int KICK_RIGHT_SPEED = 2;
-    public enum State {WALKING, STANDING_SHELL, MOVING_SHELL, DEAD};
+    public static final int KICK_LEFT = -2;
+    public static final int KICK_RIGHT = 2;
+    public enum State {WALKING, MOVING_SHELL, STANDING_SHELL};
     public State currentState;
     public State previousState;
     private float stateTime;
@@ -76,31 +76,17 @@ public class Turtle extends Enemy {
         head.set(vertice);
 
         fdef.shape = head;
-        fdef.restitution = 1.5f; // Half the bounce when Mario lands on Turtle
+        fdef.restitution = 1.8f; // The bounce when Mario lands on Turtle
         fdef.filter.categoryBits = MarioBros.ENEMY_HEAD_BIT;
         b2body.createFixture(fdef).setUserData(this);
-    }
-
-    public void onEnemyHit(Enemy enemy){
-        if (enemy instanceof Turtle) {
-            if (((Turtle)enemy).currentState == State.MOVING_SHELL && currentState != State.MOVING_SHELL) {
-                killed();
-            } else if (currentState == State.MOVING_SHELL && ((Turtle)enemy).currentState == State.WALKING) {
-                return;
-            } else {
-                reverseVelocity(true, false);
-            }
-        } else if (currentState != State.MOVING_SHELL) {
-            reverseVelocity(true, false);
-        }
     }
 
     public TextureRegion getFrame(float dt) {
         TextureRegion region;
 
         switch (currentState) {
-            case STANDING_SHELL:
             case MOVING_SHELL:
+            case STANDING_SHELL:
                 region = shell;
                 break;
             case WALKING:
@@ -122,58 +108,39 @@ public class Turtle extends Enemy {
     @Override
     public void update(float dt) {
         setRegion(getFrame(dt));
-        if (currentState == State.STANDING_SHELL && stateTime > 5) {
+        if(currentState == State.STANDING_SHELL && stateTime > 5) {
             currentState = State.WALKING;
             velocity.x = 1;
+            System.out.println("WAKE UP SHELL");
         }
 
-        setPosition(b2body.getPosition().x - getWidth()/2, b2body.getPosition().y - 8/MarioBros.PPM);
-
-        if (currentState == State.DEAD) {
-            deadRotationDegrees += 3;
-            rotate(deadRotationDegrees);
-            if (stateTime > 5 && !destroyed) {
-                world.destroyBody(b2body);
-                destroyed = true;
-            }
-        } else {
-            b2body.setLinearVelocity(velocity);
-        }
+        setPosition(b2body.getPosition().x - getWidth() / 2, b2body.getPosition().y - 8 /MarioBros.PPM);
+        b2body.setLinearVelocity(velocity);
     }
 
     @Override
     public void hitOnHead(Mario mario) {
-        if (currentState != State.STANDING_SHELL) {
+        if (currentState == State.STANDING_SHELL) {
+                if (mario.b2body.getPosition().x > b2body.getPosition().x) {
+                    velocity.x = -2;
+                } else {
+                    velocity.x = 2;
+                }
+                currentState = State.MOVING_SHELL;
+                System.out.println("Set to moving shell");
+        } else {
             currentState = State.STANDING_SHELL;
             velocity.x = 0;
-        } else {
-            kick(mario.getX() <= this.getX() ? KICK_RIGHT_SPEED : KICK_LEFT_SPEED);
         }
     }
 
-    public void draw(Batch batch) {
-        if (!destroyed) {
-            super.draw(batch);
-        }
+    @Override
+    public void hitByEnemy(Enemy enemy) {
+        reverseVelocity(true, false);
     }
 
-    public void kick(int speed) {
-        velocity.x = speed;
+    public void kick(int direction){
+        velocity.x = direction;
         currentState = State.MOVING_SHELL;
-    }
-
-    public State getCurrentState() {
-        return currentState;
-    }
-
-    public void killed() {
-        currentState = State.DEAD;
-        Filter filter = new Filter();
-        filter.maskBits = MarioBros.NOTHING_BIT;
-
-        for (Fixture fixture : b2body.getFixtureList()) {
-            fixture.setFilterData(filter);
-        }
-        b2body.applyLinearImpulse(new Vector2(0,5f), b2body.getWorldCenter(), true);
     }
 }

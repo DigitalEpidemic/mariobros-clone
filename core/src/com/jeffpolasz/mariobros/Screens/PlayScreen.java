@@ -36,6 +36,7 @@ public class PlayScreen implements Screen {
     // Basic PlayScreen variables
     private MarioBros game;
     private TextureAtlas atlas;
+    public static boolean alreadyDestroyed = false;
 
     private OrthographicCamera gamecam;
     private Viewport gamePort;
@@ -114,19 +115,21 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-
     }
 
     public void handleInput(float dt) {
         if (player.currentState != Mario.State.DEAD) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-                player.b2body.applyLinearImpulse(new Vector2(0, 4f), player.b2body.getWorldCenter(), true);
+                player.jump();
             }
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2body.getLinearVelocity().x <= 2) {
                 player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
             }
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2body.getLinearVelocity().x >= -2) {
                 player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                player.fire();
             }
         }
     }

@@ -24,6 +24,7 @@ public class Goomba extends Enemy {
     private Array<TextureRegion> frames;
     private boolean setToDestroy;
     private boolean destroyed;
+    float angle;
 
     public Goomba(PlayScreen screen, float x, float y) {
         super(screen, x, y);
@@ -36,6 +37,7 @@ public class Goomba extends Enemy {
         setBounds(getX(), getY(), 16/MarioBros.PPM, 16/MarioBros.PPM);
         setToDestroy = false;
         destroyed = false;
+        angle = 0;
     }
 
     public void update(float dt) {
@@ -94,7 +96,7 @@ public class Goomba extends Enemy {
         }
     }
 
-    public void onEnemyHit(Enemy enemy) {
+    public void hitByEnemy(Enemy enemy) {
         if (enemy instanceof Turtle && ((Turtle)enemy).currentState == Turtle.State.MOVING_SHELL) {
             setToDestroy = true;
         } else {
