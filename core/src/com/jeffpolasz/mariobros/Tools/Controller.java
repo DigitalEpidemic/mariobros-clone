@@ -32,7 +32,7 @@ public class Controller {
         table.left().bottom();
 
         Image upImg = new Image(new Texture("controller/flatDark25.png"));
-        upImg.setSize(50,50);
+        upImg.setSize(40,40);
         upImg.addListener(new InputListener(){
 
             @Override
@@ -48,7 +48,7 @@ public class Controller {
         });
 
         Image downImg = new Image(new Texture("controller/flatDark26.png"));
-        downImg.setSize(50,50);
+        downImg.setSize(40,40);
         downImg.addListener(new InputListener(){
 
             @Override
@@ -64,7 +64,7 @@ public class Controller {
         });
 
         Image leftImg = new Image(new Texture("controller/flatDark23.png"));
-        leftImg.setSize(50,50);
+        leftImg.setSize(40,40);
         leftImg.addListener(new InputListener(){
 
             @Override
@@ -80,7 +80,7 @@ public class Controller {
         });
 
         Image rightImg = new Image(new Texture("controller/flatDark24.png"));
-        rightImg.setSize(50,50);
+        rightImg.setSize(40,40);
         rightImg.addListener(new InputListener(){
 
             @Override
@@ -98,11 +98,11 @@ public class Controller {
         table.add();
         table.add(upImg).size(upImg.getWidth(), upImg.getHeight());
         table.add();
-        table.row().pad(5,5,5,5);
+        table.row().pad(1,1,1,1);
         table.add(leftImg).size(leftImg.getWidth(), leftImg.getHeight());
         table.add();
         table.add(rightImg).size(rightImg.getWidth(), rightImg.getHeight());
-        table.row().padBottom(5);
+        table.row().padBottom(3);
         table.add();
         table.add(downImg).size(downImg.getWidth(), downImg.getHeight());
         table.add();
