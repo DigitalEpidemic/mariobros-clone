@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -24,6 +25,7 @@ import com.jeffpolasz.mariobros.Sprites.Items.ItemDef;
 import com.jeffpolasz.mariobros.Sprites.Items.Mushroom;
 import com.jeffpolasz.mariobros.Sprites.Mario;
 import com.jeffpolasz.mariobros.Tools.B2WorldCreator;
+import com.jeffpolasz.mariobros.Tools.Controller;
 import com.jeffpolasz.mariobros.Tools.WorldContactListener;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -60,6 +62,8 @@ public class PlayScreen implements Screen {
     private Array<Item> items;
     private LinkedBlockingQueue<ItemDef> itemsToSpawn;
 
+    Controller controller;
+
     public PlayScreen(MarioBros game) {
         atlas = new TextureAtlas("Mario_and_Enemies.pack");
 
@@ -94,6 +98,8 @@ public class PlayScreen implements Screen {
 
         items = new Array<Item>();
         itemsToSpawn = new LinkedBlockingQueue<ItemDef>();
+
+        controller = new Controller(game.batch);
     }
 
     public void spawnItem(ItemDef idef) {
@@ -131,6 +137,20 @@ public class PlayScreen implements Screen {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                 player.fire();
             }
+
+            // On Screen Controller
+            if (controller.isUpPressed()) {
+                player.jump();
+            }
+            if (controller.isRightPressed() && player.b2body.getLinearVelocity().x <= 2) {
+                player.b2body.applyLinearImpulse(new Vector2(0.1f, 0), player.b2body.getWorldCenter(), true);
+            }
+            if (controller.isLeftPressed() && player.b2body.getLinearVelocity().x >= -2) {
+                player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), player.b2body.getWorldCenter(), true);
+            }
+//            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+//                player.fire();
+//            }
         }
     }
 
@@ -185,6 +205,7 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
+        controller.stage.draw();
 
         if (gameOver()) {
             game.setScreen(new GameOverScreen(game));
@@ -203,6 +224,7 @@ public class PlayScreen implements Screen {
     public void resize(int width, int height) {
         // Updates the game viewport
         gamePort.update(width, height);
+        controller.resize(width, height);
     }
 
     public TiledMap getMap() {
